@@ -64,7 +64,7 @@ def read_scales():
             t = int(time.time())  # Timestamp en secondes
             print(f"Fire x={row}, y={column}, i={scales[i].get()}")  # Débogage
             # Ajouter le feu à la chaîne
-            message += f"({row},{column},{scales[i].get()},{t})"
+            message += f"({row},{column},{scales[i].get()},{t})" # Ajout du feu à la chaîne
 
     if message:  # Si au moins un feu est présent
         sendUARTMessage(message + "\n")  # Envoi de la chaîne complète

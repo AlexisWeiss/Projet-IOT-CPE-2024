@@ -1,3 +1,4 @@
+//AlexisWEISS
 #include "MicroBit.h"
 
 MicroBit uBit;
@@ -9,43 +10,31 @@ int i = 0;
 int t = 0;
 int delay = 70;
 
-// Fonction appelée lors de la réception des données radio
-void onData(MicroBitEvent)
-{
+ManagedString fullMessage = ""; // Stocke le message complet reconstitué
+int blockCount = 0;             // Compteur de blocs reçus
 
-    // Réception des données radio
-    ManagedString info = uBit.radio.datagram.recv();
-    uBit.display.scroll(info, delay);
+void onData(MicroBitEvent) {
+    // Réception d'un bloc de feux par radio
+    ManagedString block = uBit.radio.datagram.recv();
+    fullMessage = fullMessage + block; // Ajout du bloc au message complet
+    blockCount++;
 
-    // Analyse de la chaîne reçue
-    if (sscanf(info.toCharArray(), "(%d,%d,%d,%d)", &x, &y, &i, &t) == 4) {
-        // Affichage des données reçues sur l'écran LED
-        ManagedString formattedData = ManagedString("(") + ManagedString(x) + "," + ManagedString(y) + "," + ManagedString(i) + "," + ManagedString(t) + ")";
-        uBit.display.scroll(formattedData, delay);
-    } else {
-        // Affiche une erreur si le format est incorrect
-        uBit.display.scroll("ERR");
+    // Affichage pour le débogage
+    uBit.display.scroll("RX BLOCK", delay);
+
+    // Vérifiez si tous les blocs sont reçus
+    // Exemple ici : Attendez un maximum de 6 blocs ou un bloc contenant "LAST"
+    if (blockCount == 6 || block.substring(block.length() - 4, block.length()) == "LAST") {
+        uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
+        uBit.display.scroll(fullMessage, delay);  // Affiche le message complet pour vérification
+
+        // Réinitialise les variables pour le prochain message
+        fullMessage = "";
+        blockCount = 0;
     }
-   /* Backup Chunk
-    ManagedString chunk = uBit.radio.datagram.recv();
-    ManagedString fullMessage = fullMessage + chunk;
-
-        // Vérifiez si le message est complet (par exemple, se termine par un '}')
-        if (fullMessage.charAt(fullMessage.length() - 1) == '}') {
-            uBit.display.scroll(fullMessage); // Affichage ou traitement
-            fullMessage = ""; // Réinitialiser pour le prochain message
-        }
-
-   // Backup Analyse de la chaîne reçue
-    if (sscanf(info.toCharArray(), "(%d,%d,%d)", &x, &y, &intensite) == 3) {
-        // Affichage des données reçues sur l'écran LED
-        ManagedString formattedData = ManagedString("(") + ManagedString(x) + "," + ManagedString(y) + "," + ManagedString(intensite) + ")";
-        uBit.display.scroll(formattedData);
-    } else {
-        // Affiche une erreur si le format est incorrect
-        uBit.display.scroll("ERR");
-    }*/
 }
+
+
 
 int main()
 {
