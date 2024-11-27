@@ -7,6 +7,7 @@ int x = 0;
 int y = 0;
 int i = 0;
 int t = 0;
+int delay = 70;
 
 // Fonction appelée lors de la réception des données radio
 void onData(MicroBitEvent)
@@ -14,11 +15,13 @@ void onData(MicroBitEvent)
 
     // Réception des données radio
     ManagedString info = uBit.radio.datagram.recv();
+    uBit.display.scroll(info, delay);
+
     // Analyse de la chaîne reçue
     if (sscanf(info.toCharArray(), "(%d,%d,%d,%d)", &x, &y, &i, &t) == 4) {
         // Affichage des données reçues sur l'écran LED
         ManagedString formattedData = ManagedString("(") + ManagedString(x) + "," + ManagedString(y) + "," + ManagedString(i) + "," + ManagedString(t) + ")";
-        uBit.display.scroll(formattedData);
+        uBit.display.scroll(formattedData, delay);
     } else {
         // Affiche une erreur si le format est incorrect
         uBit.display.scroll("ERR");

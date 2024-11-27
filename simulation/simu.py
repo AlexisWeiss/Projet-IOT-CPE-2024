@@ -56,15 +56,24 @@ def sendUARTMessage(msg):
 
 def read_scales():
     b['state'] = 'disabled'
+    message = ""  # Chaîne pour stocker tous les feux
     for i in range(Nscales):
-        column = i-(i//10)*10
-        row = i//10
-        if (scales[i].get()>0) :
-                t = time.time()
-                print("Fire x=%d, y=%d i= %d" %( row, column, scales[i].get()) )
-                sendUARTMessage("(%d,%d,%d,%d)" %(row, column, scales[i].get(), t)+ "\n")
-    
+        column = i % 10  # Calcul de la colonne
+        row = i // 10    # Calcul de la ligne
+        if scales[i].get() > 0:  # Si le feu a une intensité > 0
+            t = int(time.time())  # Timestamp en secondes
+            print(f"Fire x={row}, y={column}, i={scales[i].get()}")  # Débogage
+            # Ajouter le feu à la chaîne
+            message += f"({row},{column},{scales[i].get()},{t})"
+
+    if message:  # Si au moins un feu est présent
+        sendUARTMessage(message + "\n")  # Envoi de la chaîne complète
+        print(f"Message sent: {message}")  # Débogage
+    else:
+        print("No fires detected.")  # Message si aucun feu n'est détecté
+
     b['state'] = 'normal'
+
 
 b=Button(master,text="Send Values",highlightcolor="blue",command=read_scales, state="disabled") # button to read values
 serialButton=Button(master,text="Open Serial",highlightcolor="blue",command=initUART) # button to read values

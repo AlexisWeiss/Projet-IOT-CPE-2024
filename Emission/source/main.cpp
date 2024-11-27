@@ -33,27 +33,57 @@ int main() {
 
     while (true) {
         uBit.display.scroll("waiting", delay);
+
         // Vérifie s'il y a des données disponibles sur le port série
         if (uBit.serial.isReadable()) {
             uBit.display.scroll("Reading", delay);
+
             // Lit les données sur le port série
             ManagedString receivedData = uBit.serial.readUntil('\n'); // Lit jusqu'à une nouvelle ligne
             uBit.display.scroll("Stop Reading", delay);
             uBit.display.scroll(receivedData, delay);
-            // Variables pour stocker les valeurs extraites
-            int x = 0, y = 0, i = 0, t=0;
 
-            // Analyse de la chaîne reçue
-            if (sscanf(receivedData.toCharArray(), "(%d,%d,%d,%d)", &x, &y, &i, &t) == 4) {
-                // Formatage des données pour l'envoi par radio
-                ManagedString formattedData = ManagedString("(") + ManagedString(x) + "," + ManagedString(y) + "," + ManagedString(i) + "," + ManagedString(t) + ")";
-                // Envoie les données par radio
-                uBit.radio.datagram.send(formattedData);
-                // Affiche les données envoyées pour le débogage
-                uBit.display.scroll(formattedData);
+            // Initialisation pour vérifier chaque feu
+            bool allFiresValid = true; // Indique si tous les feux sont valides
+            int start = 0; // Position de début pour parcourir le message
+
+            // Parcourt chaque feu dans le message
+            while (start < receivedData.length()) {
+                // Recherche de la prochaine parenthèse fermante `)`
+                int end = -1;
+                for (int i = start; i < receivedData.length(); i++) {
+                    if (receivedData.charAt(i) == ')') {
+                        end = i;
+                        break;
+                    }
+                }
+
+                // Si aucune parenthèse fermante trouvée
+                if (end == -1) {
+                    allFiresValid = false;
+                    break;
+                }
+
+                // Extraire un feu complet
+                ManagedString fireData = receivedData.substring(start, end + 1);
+                start = end + 1; // Passe au prochain feu
+
+                // Variables pour stocker les données du feu
+                int x = 0, y = 0, i = 0, t = 0;
+
+                // Vérifie le format du feu
+                if (sscanf(fireData.toCharArray(), "(%d,%d,%d,%d)", &x, &y, &i, &t) != 4) {
+                    allFiresValid = false;
+                    break; // Si un feu est mal formé, on arrête
+                }
+            }
+
+            // Si tous les feux sont valides, on envoie le message complet
+            if (allFiresValid) {
+                uBit.radio.datagram.send(receivedData); // Envoie tout le message
+                uBit.display.scroll("TX OK", delay); // Débogage : confirmation d'envoi
             } else {
-                // Si le format est incorrect, afficher un message d'erreur
-                uBit.display.scroll("ERR");
+                uBit.display.scroll("ERR", delay); // Débogage : erreur dans le format
             }
         }
 
@@ -61,6 +91,8 @@ int main() {
         uBit.sleep(100);
         printf("pause de 100ms");
     }
+
+
 
     release_fiber();
 }
