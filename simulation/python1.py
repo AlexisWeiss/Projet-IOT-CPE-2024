@@ -2,116 +2,102 @@ from flask import Flask, jsonify
 import psycopg2
 import threading
 import time
-import requests  # Pour effectuer des requêtes HTTP
+import requests
+import os
 
-# Création de l'application Flask
+
 app = Flask(__name__)
 previous_states = {}
 
 
-# Configuration de la base de données PostgreSQL
 DB_CONFIG = {
-    "dbname": "votre_nom_de_base",
-    "user": "votre_utilisateur",
-    "password": "votre_mot_de_passe",
-    "host": "localhost",  # ou l'adresse IP de votre serveur
-    "port": 5432          # Port par défaut pour PostgreSQL
+    "dbname": "postgres",
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "port": 5432
 }
 
-# Fonction pour interroger la base de données et récupérer toute la table "capteurs"
 def get_all_sensors():
+    conn = None
+    cursor = None
     try:
-        # Connexion à PostgreSQL
+        #print("Tentative de connexion à la base de données PostgreSQL...")
         conn = psycopg2.connect(**DB_CONFIG)
+        #print("Connexion réussie à PostgreSQL.")
         cursor = conn.cursor()
-        
-        # Requête SQL pour récupérer toutes les données de la table "capteurs"
-        query = "SELECT id, coord_X, coord_Y, intensité FROM capteurs"
+        query = "SELECT id, longitude, latitude, intensité FROM capteurs"
         cursor.execute(query)
-        
-        # Récupérer les résultats
         rows = cursor.fetchall()
-        
-        # Formater les résultats en JSON
-        result = [
-            {"id": row[0], "coord_X": row[1], "coord_Y": row[2], "intensité": row[3]}
-            for row in rows
-        ]
-        return result
-
+        #print(f"Données récupérées : {rows}")
+        return [{"id": row[0], "longitude": row[1], "latitude": row[2], "intensité": row[3]} for row in rows]
     except Exception as e:
-        print(f"Erreur : {e}")
+        print(f"Erreur lors de la connexion à PostgreSQL : {e}")
         return []
-
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+        #print("Connexion à la base de données fermée.")
 
 
-def process_sensor_data(sensor_data, previous_states):
-    """
-    Analyse le JSON des capteurs pour détecter les changements d'intensité.
-    Si l'intensité d'un capteur est > 0, formate ses données dans une chaîne de caractères.
-    
-    Args:
-        sensor_data (list): Liste de dictionnaires représentant les données des capteurs.
-        previous_states (dict): Dictionnaire contenant l'état précédent des capteurs (par id).
-
-    Returns:
-        str: Une chaîne contenant les capteurs actifs au format "(id,coord_X,coord_Y,intensité)".
-        dict: Le nouvel état des capteurs.
-    """
-    result = ""  # Chaîne pour stocker les capteurs actifs
+def process_sensor_data(sensor_data):
+    global previous_states  # Ajout de l'accès global à previous_states
+    result = ""  # Stocke les capteurs actifs sous forme de chaîne
+    new_previous_states = {}  # Nouveau dictionnaire temporaire
 
     for sensor in sensor_data:
         sensor_id = sensor["id"]
-        coord_X = sensor["coord_X"]
-        coord_Y = sensor["coord_Y"]
+        longitude = sensor["longitude"]
+        latitude = sensor["latitude"]
         intensity = sensor["intensité"]
 
-        # Vérifie si l'intensité a changé ou est supérieure à 0
-        if intensity > 0 and (sensor_id not in previous_states or previous_states[sensor_id] != intensity):
-            # Ajoute le capteur au résultat sous forme de chaîne
-            result += f"({sensor_id},{coord_X},{coord_Y},{intensity})"
+        if intensity > 0:  # Si le capteur est actif
+            if sensor_id not in previous_states or previous_states[sensor_id] != intensity:
+                print(f"Capteur actif ou changé : ID={sensor_id}, Intensité={intensity}")  # DEBUG
+                result += f"({sensor_id},{longitude},{latitude},{intensity})"
+            new_previous_states[sensor_id] = intensity  # Mise à jour des capteurs actifs
 
-        # Met à jour l'état précédent pour ce capteur
-        previous_states[sensor_id] = intensity
+    previous_states = new_previous_states  # Mise à jour globale après traitement
+    print(f"Previous states mis à jour : {previous_states}")  # DEBUG
+    return result
 
-    return result, previous_states
 
 
-# Endpoint API pour récupérer toutes les données de "capteurs"
 @app.route('/api/capteurs', methods=['GET'])
 def api_get_all_sensors():
-    data = get_all_sensors()  # Appelle la fonction pour interroger la base
-    return jsonify(data)      # Retourne les données au format JSON
+    print("Ok "+str(os.getpid()))
+    #print("Appel reçu sur /api/capteurs")  # Debug
+    data = get_all_sensors()
+    return jsonify(data)
 
 # Tâche périodique pour interroger l'API toutes les 3 secondes
 def periodic_query():
+    print("Pouet"+str(threading.current_thread().ident))
+    global previous_states
     while True:
-        print("Interrogation de l'API...")
+        #print("Interrogation périodique de l'API...")
         try:
-            # Effectuer une requête GET à l'API
-            response = requests.get("http://127.0.0.1:5000/api/capteurs")
-            
+            # Corrigez l'URL pour utiliser le bon port
+            response = requests.get("http://127.0.0.1:5001/api/capteurs")
+            #print(f"Statut API : {response.status_code}")
             if response.status_code == 200:
-                data = response.json()  # Convertir la réponse JSON en dictionnaire Python
-                result, previous_states = process_sensor_data(data, previous_states)
-                print("Capteurs actifs :", result)  # Affiche les capteurs actifs
-                print(data)  # Afficher les données dans la console
+                data = response.json()
+                result = process_sensor_data(data)
+                #print(f"Données reçues de l'API : {data}")
+                print("Capteurs actifs :", result)
             else:
                 print(f"Erreur API : {response.status_code}")
         except Exception as e:
             print(f"Erreur lors de l'appel à l'API : {e}")
-        
-        time.sleep(3)  # Pause de 3 secondes avant la prochaine requête
+        print("################################################")
+        time.sleep(3)
 
-# Lancer le serveur Flask et la tâche périodique
+
 if __name__ == '__main__':
-    # Lancer la tâche périodique dans un thread séparé
+    print(os.getpid())
     thread = threading.Thread(target=periodic_query)
     thread.daemon = True
     thread.start()
-    
-    # Lancer le serveur Flask
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5001)  # Changez de 5000 à 5001
