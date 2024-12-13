@@ -1,13 +1,11 @@
 //AlexisWEISS
 #include "MicroBit.h"
-#define CLECRYPTAGE 0x4c // Clé XOR
+#define CLECRYPTAGE 0x4C // Clé XOR
 MicroBit uBit;
 
 // Variables globales pour stocker les données reçues
-int x = 0;
-int y = 0;
+int id = 0;
 int i = 0;
-int t = 0;
 int delay = 70;
 
 ManagedString fullMessage = ""; // Stocke le message complet reconstitué
@@ -32,12 +30,13 @@ int blockCount = 0;             // Compteur de blocs reçus
         blockCount++;
 
         // Affichage pour le débogage
-        uBit.display.scroll("RX BLOCK", delay);
+        //uBit.display.scroll("RX BLOCK", delay);
+        //uBit.display.scroll(uncrypted_block, delay);
 
         // Vérifiez si tous les blocs sont reçus
         // Exemple ici : Attendez un maximum de 6 blocs ou un bloc contenant "LAST"
-        if (blockCount == 6 || uncrypted_block.substring(uncrypted_block.length() - 4, uncrypted_block.length()) == "LAST") {
-            uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
+        if (blockCount == 6 || uncrypted_block.substring(uncrypted_block.length() - 3, 3) == "END") {
+            //uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
             uBit.display.scroll(fullMessage, delay);  // Affiche le message complet pour vérification
 
             // Réinitialise les variables pour le prochain message

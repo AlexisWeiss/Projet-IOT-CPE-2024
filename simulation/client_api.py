@@ -1,5 +1,13 @@
 import requests
 import time
+import serial
+
+# Configuration du port série
+SERIAL_PORT = "/dev/tty.usbmodem111302"  # Adaptez à votre configuration
+BAUD_RATE = 115200  # Adaptez si nécessaire
+
+# Initialisation du port série
+ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
 
 previous_states = {}
 
@@ -10,17 +18,19 @@ def process_sensor_data(sensor_data):
 
     for sensor in sensor_data:
         sensor_id = sensor["id"]
-        longitude = sensor["longitude"]
-        latitude = sensor["latitude"]
         intensity = sensor["intensité"]
 
         if intensity > 0:
             if sensor_id not in previous_states or previous_states[sensor_id] != intensity:
                 print(f"Capteur actif ou changé : ID={sensor_id}, Intensité={intensity}")
-                result += f"({sensor_id},{longitude},{latitude},{intensity})"
-            new_previous_states[sensor_id] = intensity
-
-    previous_states = new_previous_states
+                result += f"({sensor_id},{intensity})"
+                #result = f"({sensor_id},{intensity})"
+                new_previous_states[sensor_id] = intensity
+                previous_states = new_previous_states
+    
+    ser.write(result.encode() + b"\n")  # Ajoute un saut de ligne pour le séparateur
+           
+    
     print(f"Previous states mis à jour : {previous_states}")
     return result
 
@@ -41,3 +51,5 @@ def periodic_query():
 
 if __name__ == '__main__':
     periodic_query()
+
+#décommenter le code pour essayer la nouvelle veresion avec l'envoi des données sur le port série

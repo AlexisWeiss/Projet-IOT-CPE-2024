@@ -20,7 +20,7 @@ def get_all_sensors():
         query = "SELECT id, longitude, latitude, intensité FROM capteurs"
         cursor.execute(query)
         rows = cursor.fetchall()
-        return [{"id": row[0], "longitude": row[1], "latitude": row[2], "intensité": row[3]} for row in rows]
+        return [{"id": row[0], "intensité": row[3]} for row in rows]
     except Exception as e:
         print(f"Erreur lors de la connexion à PostgreSQL : {e}")
         return []
