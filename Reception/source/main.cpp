@@ -30,15 +30,16 @@ int blockCount = 0;             // Compteur de blocs reçus
         blockCount++;
 
         // Affichage pour le débogage
-        //uBit.display.scroll("RX BLOCK", delay);
-        //uBit.display.scroll(uncrypted_block, delay);
+        uBit.display.scroll("RX BLOCK", delay);
+        uBit.display.scroll(uncrypted_block, delay);
 
         // Vérifiez si tous les blocs sont reçus
         // Exemple ici : Attendez un maximum de 6 blocs ou un bloc contenant "LAST"
         if (blockCount == 6 || uncrypted_block.substring(uncrypted_block.length() - 3, 3) == "END") {
-            //uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
+            uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
             uBit.display.scroll(fullMessage, delay);  // Affiche le message complet pour vérification
-
+            ManagedString messageToSend = fullMessage.substring(0, fullMessage.length() - 3);
+            uBit.serial.send(messageToSend + "\n"); // Envoi sur le port série
             // Réinitialise les variables pour le prochain message
             fullMessage = "";
             blockCount = 0;
@@ -57,9 +58,12 @@ int blockCount = 0;             // Compteur de blocs reçus
         // Écoute les événements de réception radio
         uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onData);
         uBit.radio.enable();
+        // Configure le port série
+        uBit.serial.baud(115200); // Définit la vitesse du port série
+        uBit.serial.setTxBufferSize(248); // Définit la taille du tampon TX si nécessaire
 
         // Boucle principale
         while (1)
-            uBit.sleep(1000);
+            uBit.sleep(100);
 
     }
