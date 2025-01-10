@@ -1,0 +1,47 @@
+services:
+  influxdb:
+    image: influxdb:2
+    ports:
+        - 8086:8086
+    volumes:
+        - $PWD/data:/var/lib/influxdb2
+        - $PWD/config:/etc/influxdb2
+    environment:
+        - DOCKER_INFLUXDB_INIT_MODE=setup
+        - DOCKER_INFLUXDB_INIT_USERNAME=my-user
+        - DOCKER_INFLUXDB_INIT_PASSWORD=my-password
+        - DOCKER_INFLUXDB_INIT_ORG=my-org
+        - DOCKER_INFLUXDB_INIT_BUCKET=my-bucket
+        - DOCKER_INFLUXDB_INIT_RETENTION=1w
+        - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+
+  eclipse-mosquitto:
+    image: eclipse-mosquitto
+    stdin_open: true
+    tty: true
+    ports:
+        - 1883:1883
+        - 9001:9001
+    volumes:
+        - $PWD/mosquitto/config:/mosquitto/config
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - $PWD/grafana-storage:/var/lib/grafana
+
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    depends_on:
+      - influxdb
+      - eclipse-mosquitto
+    volumes:
+      - $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - HOSTNAME=telegraf
+    restart: unless-stopped

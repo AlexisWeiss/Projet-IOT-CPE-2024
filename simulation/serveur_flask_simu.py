@@ -7,8 +7,11 @@ DB_CONFIG = {
     "dbname": "simu",
     "user": "postgres",
     "password": "password",
-    "host": "192.168.21.153",
+    #"host": "192.168.21.153", #IP BDD GLOBAL
+    # "host": "10.42.225.195", #IP BDD MATHIEU"
+    "host": "localhost",
     "port": 5432
+    # "port": 5050
 }
 
 def get_all_sensors():

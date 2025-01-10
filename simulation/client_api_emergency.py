@@ -80,3 +80,9 @@ def read_serial():
 if __name__ == '__main__':
     print("Démarrage de la lecture sur le port série...")
     read_serial()
+
+
+
+
+#FAIRE UN ENVOI EN MQTT VERS INFLUXDB
+
