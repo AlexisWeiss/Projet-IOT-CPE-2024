@@ -49,9 +49,9 @@ int delay = 60;
         if (fireCount > 0) {
             //uBit.display.scroll(blockMessage.length(), delay); // Affiche la longueur du message pour débogage
             blockMessage = blockMessage + "END";             // Ajoute END à la fin
-            uBit.display.scroll(blockMessage, delay);         // Affiche le message pour débogage
+            //uBit.display.scroll(blockMessage, delay);         // Affiche le message pour débogage
             uBit.radio.datagram.send(xorEncryptDecrypt(blockMessage));           // Envoi du bloc en le cryptant
-            uBit.display.scroll("TX END", delay);            // Affiche confirmation d’envoi
+            uBit.display.scroll("TX", delay);            // Affiche confirmation d’envoi
             blockMessage = "";   // Réinitialise le bloc
             fireCount = 0;       // Réinitialise le compteur
         }
@@ -73,21 +73,21 @@ int delay = 60;
         uBit.serial.setRxBufferSize(248); // Taille du tampon de réception
 
             while (true) {
-                uBit.display.scroll("waiting", delay);
+                uBit.display.scroll("w", delay);
                 int fireCount = 0;           // Compte le nombre de feux dans un bloc
                 ManagedString blockMessage="";  // Stocke les feux dans un bloc de 10 pour envoi radio
                 bool isLast = false;         // Indique si le dernier bloc est atteint
 
                 if (uBit.serial.isReadable()) { // Vérifie s'il y a des données disponibles sur le port série
 
-                    uBit.display.scroll("Reading", delay);
+                    uBit.display.scroll("R", delay);
 
                     ManagedString receivedData = uBit.serial.readUntil('\n'); // Lit les données sur le port série
 
-                    uBit.display.scroll("Stop Reading", delay);
+                    uBit.display.scroll("SR", delay);
                     int start = 0;// Position de début pour parcourir le message (numero de capteur)
                     
-                    uBit.display.scroll(receivedData.length(), delay);//DEBUG
+                    //uBit.display.scroll(receivedData.length(), delay);//DEBUG
 
                     while (start < receivedData.length()) { // Parcourt chaque feu dans le message
 

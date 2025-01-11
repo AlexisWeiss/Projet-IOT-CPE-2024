@@ -30,14 +30,14 @@ int blockCount = 0;             // Compteur de blocs reçus
         blockCount++;
 
         // Affichage pour le débogage
-        uBit.display.scroll("RX BLOCK", delay);
+        uBit.display.scroll("RX", delay);
         uBit.display.scroll(uncrypted_block, delay);
 
         // Vérifiez si tous les blocs sont reçus
         // Exemple ici : Attendez un maximum de 6 blocs ou un bloc contenant "LAST"
         if (blockCount == 6 || uncrypted_block.substring(uncrypted_block.length() - 3, 3) == "END") {
-            uBit.display.scroll("RX COMPLETE", delay); // Débogage : Message complet reçu
-            uBit.display.scroll(fullMessage, delay);  // Affiche le message complet pour vérification
+            uBit.display.scroll("RXC", delay); // Débogage : Message complet reçu
+            //uBit.display.scroll(fullMessage, delay);  // Affiche le message complet pour vérification
             ManagedString messageToSend = fullMessage.substring(0, fullMessage.length() - 3);
             uBit.serial.send(messageToSend + "\n"); // Envoi sur le port série
             // Réinitialise les variables pour le prochain message
