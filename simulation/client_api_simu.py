@@ -13,8 +13,8 @@ previous_states = {}
 
 def process_sensor_data(sensor_data):
     global previous_states  # Accès au dictionnaire global
-    result = ""  # Stocke les capteurs actifs sous forme de chaîne
     new_previous_states = {}  # Nouveau dictionnaire temporaire
+    result = ""  # Chaîne pour afficher les capteurs actifs
 
     for sensor in sensor_data:
         sensor_id = sensor["id"]
@@ -24,24 +24,26 @@ def process_sensor_data(sensor_data):
         if intensity > 0:
             if sensor_id not in previous_states or previous_states[sensor_id] != intensity:
                 print(f"Capteur actif ou changé : ID={sensor_id}, intensite={intensity}")
-                result += f"({sensor_id},{intensity})"
-                ser.write(result.encode() + b"\n")  # Envoie sur le port série
-                print(f"Résultat envoyé au port série : {result}")
-            # Mise à jour des capteurs actifs dans `new_previous_states`
+                single_result = f"({sensor_id},{intensity})"
+                ser.write(single_result.encode() + b"\n")  # Envoie chaque capteur individuellement
+                print(f"Résultat envoyé au port série : {single_result}")
+                result += single_result  # Ajoute au résultat global
             new_previous_states[sensor_id] = intensity
 
         # Cas où l'intensité est 0
         elif intensity == 0:
             if sensor_id in previous_states:
                 print(f"Capteur désactivé : ID={sensor_id}, intensite=0")
-                result += f"({sensor_id},{intensity})"
-                ser.write(result.encode() + b"\n")  # Envoie sur le port série
-                print(f"Résultat envoyé au port série : {result}")
+                single_result = f"({sensor_id},{intensity})"
+                ser.write(single_result.encode() + b"\n")  # Envoie chaque capteur individuellement
+                print(f"Résultat envoyé au port série : {single_result}")
+                result += single_result  # Ajoute au résultat global
 
     # Mise à jour de `previous_states` avec les nouveaux capteurs actifs
     previous_states = new_previous_states
     print(f"Previous states mis à jour : {previous_states}")
-    return result
+    return result  # Retourne les capteurs actifs sous forme de chaîne
+
 
 
 

@@ -6,9 +6,13 @@ app = Flask(__name__)
 DB_CONFIG = {
     "dbname": "postgres",
     "user": "postgres",
-    "password": "password",
-    "host": "192.168.21.153",
+    "password": "postgres",
+    #"password": "password",
+    #"host": "192.168.21.153", #IP BDD GLOBAL
+    # "host": "10.42.225.195", #IP BDD MATHIEU"
+    "host": "localhost",
     "port": 5432
+    # "port": 5050
 }
 
 def update_sensor_data(sensor_data):
