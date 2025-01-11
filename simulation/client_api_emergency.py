@@ -16,6 +16,81 @@ MQTT_TOPIC = "microbit/data"  # Sujet MQTT où publier les messages
 # Configuration de l'API
 API_ENDPOINT = "http://127.0.0.1:5002/api/emergency"  # Endpoint pour envoyer les données
 
+#==============================================================================
+
+# Chargement des coordonnées des capteurs depuis un fichier JSON
+#try:
+#    with open("coordonates.json", "r") as file:
+#        SENSOR_COORDINATES = json.load(file)
+#        print("Coordonnées des capteurs chargées avec succès.")
+#except Exception as e:
+#    print(f"Erreur lors du chargement des coordonnées : {e}")
+SENSOR_COORDINATES = {
+    1:{"longitude": 4.788541313460655, "latitude": 45.75707789477852},
+    2:{"longitude": 4.799470242742586, "latitude": 45.75707789477852},
+    3:{"longitude": 4.799470242742586, "latitude": 45.76738430073763},
+    4:{"longitude": 4.799470242742586, "latitude": 45.777690706696745},
+    5:{"longitude": 4.810399172024518, "latitude": 45.75707789477852},
+    6:{"longitude": 4.810399172024518, "latitude": 45.76738430073763},
+    7:{"longitude": 4.810399172024518, "latitude": 45.777690706696745},
+    8:{"longitude": 4.810399172024518, "latitude": 45.78799711265586},
+    9:{"longitude": 4.821328101306449, "latitude": 45.72615867690118},
+    10:{ "longitude": 4.821328101306449, "latitude": 45.73646508286029},
+    11:{ "longitude": 4.821328101306449, "latitude": 45.746771488819405},
+    12:{ "longitude": 4.821328101306449, "latitude": 45.75707789477852},
+    13:{ "longitude": 4.821328101306449, "latitude": 45.76738430073763},
+    14:{ "longitude": 4.821328101306449, "latitude": 45.777690706696745},
+    15:{ "longitude": 4.821328101306449, "latitude": 45.78799711265586},
+    16:{ "longitude": 4.821328101306449, "latitude": 45.79830351861497},
+    17:{ "longitude": 4.83225703058838, "latitude": 45.72615867690118},
+    18:{ "longitude": 4.83225703058838, "latitude": 45.73646508286029},
+    19:{ "longitude": 4.83225703058838, "latitude": 45.746771488819405},
+    20:{ "longitude": 4.83225703058838, "latitude": 45.75707789477852},
+    21:{ "longitude": 4.83225703058838, "latitude": 45.76738430073763},
+    22:{ "longitude": 4.83225703058838, "latitude": 45.777690706696745},
+    23:{ "longitude": 4.83225703058838, "latitude": 45.78799711265586},
+    24:{ "longitude": 4.83225703058838, "latitude": 45.808609924574085},
+    25:{ "longitude": 4.843185959870311, "latitude": 45.72615867690118},
+    26:{ "longitude": 4.843185959870311, "latitude": 45.73646508286029},
+    27:{ "longitude": 4.843185959870311, "latitude": 45.746771488819405},
+    28:{ "longitude": 4.843185959870311, "latitude": 45.75707789477852},
+    29:{ "longitude": 4.843185959870311, "latitude": 45.76738430073763},
+    30:{ "longitude": 4.843185959870311, "latitude": 45.777690706696745},
+    31:{ "longitude": 4.843185959870311, "latitude": 45.78799711265586},
+    32:{ "longitude": 4.8541148891522425, "latitude": 45.72615867690118},
+    33:{ "longitude": 4.8541148891522425, "latitude": 45.73646508286029},
+    34:{ "longitude": 4.8541148891522425, "latitude": 45.746771488819405},
+    35:{ "longitude": 4.8541148891522425, "latitude": 45.75707789477852},
+    36:{ "longitude": 4.8541148891522425, "latitude": 45.76738430073763},
+    37:{ "longitude": 4.8541148891522425, "latitude": 45.777690706696745},
+    38:{ "longitude": 4.865043818434174, "latitude": 45.73646508286029},
+    39:{ "longitude": 4.865043818434174, "latitude": 45.746771488819405},
+    40:{ "longitude": 4.865043818434174, "latitude": 45.75707789477852},
+    41:{ "longitude": 4.865043818434174, "latitude": 45.76738430073763},
+    42:{ "longitude": 4.865043818434174, "latitude": 45.777690706696745},
+    43:{ "longitude": 4.865043818434174, "latitude": 45.78799711265586},
+    44:{ "longitude": 4.875972747716105, "latitude": 45.72615867690118},
+    45:{ "longitude": 4.875972747716105, "latitude": 45.73646508286029},
+    46:{ "longitude": 4.875972747716105, "latitude": 45.746771488819405},
+    47:{ "longitude": 4.875972747716105, "latitude": 45.75707789477852},
+    48:{ "longitude": 4.875972747716105, "latitude": 45.76738430073763},
+    49:{ "longitude": 4.875972747716105, "latitude": 45.777690706696745},
+    50:{ "longitude": 4.875972747716105, "latitude": 45.78799711265586},
+    51:{ "longitude": 4.886901676998036, "latitude": 45.72615867690118},
+    52:{ "longitude": 4.886901676998036, "latitude": 45.73646508286029},
+    53:{ "longitude": 4.886901676998036, "latitude": 45.746771488819405},
+    54:{ "longitude": 4.886901676998036, "latitude": 45.75707789477852},
+    55:{ "longitude": 4.886901676998036, "latitude": 45.76738430073763},
+    56:{ "longitude": 4.886901676998036, "latitude": 45.777690706696745},
+    57:{ "longitude": 4.8978306062799675, "latitude": 45.73646508286029},
+    58:{ "longitude": 4.8978306062799675, "latitude": 45.746771488819405},
+    59:{ "longitude": 4.8978306062799675, "latitude": 45.75707789477852},
+    60:{ "longitude": 4.8978306062799675, "latitude": 45.76738430073763}
+}
+
+#==============================================================================
+
+
 # Initialisation du port série
 try:
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
@@ -51,21 +126,48 @@ def send_to_api(data):
     except Exception as e:
         print(f"Erreur lors de l'appel à l'API : {e}")
 
+#==============================================================================
+
 def publish_to_mqtt(sensor_data_list):
     """
-    Publie les données des capteurs sur MQTT.
+    Publie les données des capteurs sur MQTT avec les coordonnées.
     """
     try:
         for sensor_data in sensor_data_list:
-            mqtt_payload = {
-                "sensor_id": sensor_data["id"],
-                "intensity": sensor_data["intensite"],
-                "timestamp": int(time.time())
-            }
-            mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
-            print(f"Données publiées sur MQTT : {mqtt_payload}")
+            sensor_id = sensor_data["id"]
+            if sensor_id in SENSOR_COORDINATES:
+                mqtt_payload = {
+                    "sensor_id": sensor_id,
+                    "intensity": sensor_data["intensite"],
+                    "latitude": SENSOR_COORDINATES[sensor_id]["latitude"],
+                    "longitude": SENSOR_COORDINATES[sensor_id]["longitude"],
+                    "timestamp": int(time.time())
+                }
+                mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
+                print(f"Données publiées sur MQTT : {mqtt_payload}")
+            else:
+                print(f"Aucune coordonnée pour le capteur {sensor_id}, données ignorées.")
     except Exception as e:
         print(f"Erreur lors de la publication sur MQTT : {e}")
+
+
+#def publish_to_mqtt(sensor_data_list):
+#    """
+#    Publie les données des capteurs sur MQTT.
+#    """
+#    try:
+#        for sensor_data in sensor_data_list:
+#            mqtt_payload = {
+#               se:{sor_data["id"],
+#                "intensity": sensor_data["intensite"],
+#                "timestamp": int(time.time())
+#            }
+#            mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
+#            print(f"Données publiées sur MQTT : {mqtt_payload}")
+#    except Exception as e:
+#        print(f"Erreur lors de la publication sur MQTT : {e}")
+
+#==============================================================================
 
 
 def read_serial():
