@@ -4,6 +4,8 @@ import json
 import time
 import paho.mqtt.client as mqtt
 
+#====================================CONFIGURATION==========================================
+
 # Configuration du port série
 SERIAL_PORT = "/dev/tty.usbmodem11102"  # Adaptez au port série utilisé
 BAUD_RATE = 115200  # Adaptez si nécessaire
@@ -16,15 +18,6 @@ MQTT_TOPIC = "microbit/data"  # Sujet MQTT où publier les messages
 # Configuration de l'API
 API_ENDPOINT = "http://127.0.0.1:5002/api/emergency"  # Endpoint pour envoyer les données
 
-#==============================================================================
-
-# Chargement des coordonnées des capteurs depuis un fichier JSON
-#try:
-#    with open("coordonates.json", "r") as file:
-#        SENSOR_COORDINATES = json.load(file)
-#        print("Coordonnées des capteurs chargées avec succès.")
-#except Exception as e:
-#    print(f"Erreur lors du chargement des coordonnées : {e}")
 SENSOR_COORDINATES = {
     1:{"longitude": 4.788541313460655, "latitude": 45.75707789477852},
     2:{"longitude": 4.799470242742586, "latitude": 45.75707789477852},
@@ -88,8 +81,7 @@ SENSOR_COORDINATES = {
     60:{ "longitude": 4.8978306062799675, "latitude": 45.76738430073763}
 }
 
-#==============================================================================
-
+#=================================INIT==================================================================
 
 # Initialisation du port série
 try:
@@ -107,6 +99,8 @@ try:
 except Exception as e:
     print(f"Erreur de connexion au broker MQTT : {e}")
     exit()
+
+#=================================FONCTION==============================================================
 
 def send_to_api(data):
     """
@@ -150,25 +144,7 @@ def publish_to_mqtt(sensor_data_list):
     except Exception as e:
         print(f"Erreur lors de la publication sur MQTT : {e}")
 
-
-#def publish_to_mqtt(sensor_data_list):
-#    """
-#    Publie les données des capteurs sur MQTT.
-#    """
-#    try:
-#        for sensor_data in sensor_data_list:
-#            mqtt_payload = {
-#               se:{sor_data["id"],
-#                "intensity": sensor_data["intensite"],
-#                "timestamp": int(time.time())
-#            }
-#            mqtt_client.publish(MQTT_TOPIC, json.dumps(mqtt_payload))
-#            print(f"Données publiées sur MQTT : {mqtt_payload}")
-#    except Exception as e:
-#        print(f"Erreur lors de la publication sur MQTT : {e}")
-
 #==============================================================================
-
 
 def read_serial():
     """
@@ -211,12 +187,8 @@ def read_serial():
 
         time.sleep(0.1)  # Petite pause pour éviter une boucle trop rapide
 
+#=================================MAIN===============================================================
+
 if __name__ == '__main__':
     print("Démarrage de la lecture sur le port série...")
     read_serial()
-
-
-
-
-#FAIRE UN ENVOI EN MQTT VERS INFLUXDB
-

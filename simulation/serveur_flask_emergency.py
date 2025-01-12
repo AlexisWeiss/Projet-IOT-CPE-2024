@@ -3,6 +3,9 @@ import psycopg2
 
 app = Flask(__name__)
 
+#====================================CONFIGURATION==========================================
+
+
 DB_CONFIG = {
     "dbname": "postgres",
     "user": "postgres",
@@ -14,6 +17,9 @@ DB_CONFIG = {
     "port": 5432
     # "port": 5050
 }
+
+#====================================FONCTION===============================================
+
 
 def update_sensor_data(sensor_data):
     conn = None
@@ -37,6 +43,8 @@ def update_sensor_data(sensor_data):
         if conn:
             conn.close()
 
+#====================================API ROUTE=============================================
+
 @app.route('/api/emergency', methods=['PUT'])
 def api_update_sensors():
     try:
@@ -52,6 +60,8 @@ def api_update_sensors():
     except Exception as e:
         print(f"Erreur dans l'endpoint /api/emergency : {e}")
         return jsonify({"success": False, "message": str(e)}), 500
+    
+#====================================MAIN=================================================
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5002)  # Serveur Flask

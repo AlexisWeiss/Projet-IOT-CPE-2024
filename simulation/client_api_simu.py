@@ -2,6 +2,8 @@ import requests
 import time
 import serial
 
+#=================================INIT==================================================================
+
 # Configuration du port série
 SERIAL_PORT = "/dev/tty.usbmodem11302"  # Adaptez à votre configuration
 BAUD_RATE = 115200  # Adaptez si nécessaire
@@ -10,6 +12,8 @@ BAUD_RATE = 115200  # Adaptez si nécessaire
 ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
 
 previous_states = {}
+
+#=================================FONCTION==============================================================
 
 def process_sensor_data(sensor_data):
     global previous_states  # Accès au dictionnaire global
@@ -41,12 +45,12 @@ def process_sensor_data(sensor_data):
 
     # Mise à jour de `previous_states` avec les nouveaux capteurs actifs
     previous_states = new_previous_states
-    print(f"Previous states mis à jour : {previous_states}")
+    #print(f"Previous states mis à jour : {previous_states}")
     return result  # Retourne les capteurs actifs sous forme de chaîne
 
 
 
-
+#=================================APPEL PERIODIQUE A L'API=============================================
 
 def periodic_query():
     global previous_states
@@ -56,12 +60,14 @@ def periodic_query():
             if response.status_code == 200:
                 data = response.json()
                 result = process_sensor_data(data)
-                print("Capteurs actifs :", result)
+                #print("Capteurs actifs :", result)
             else:
                 print(f"Erreur API : {response.status_code}")
         except Exception as e:
             print(f"Erreur lors de l'appel à l'API : {e}")
         time.sleep(3)
+
+#=================================MAIN===============================================================
 
 if __name__ == '__main__':
     periodic_query()

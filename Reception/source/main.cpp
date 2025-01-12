@@ -31,7 +31,7 @@ int blockCount = 0;             // Compteur de blocs reçus
 
         // Affichage pour le débogage
         uBit.display.scroll("RX", delay);
-        uBit.display.scroll(uncrypted_block, delay);
+        //uBit.display.scroll(uncrypted_block, delay);
 
         // Vérifiez si tous les blocs sont reçus
         // Exemple ici : Attendez un maximum de 6 blocs ou un bloc contenant "LAST"
