@@ -4,7 +4,7 @@
 #include <stdio.h>
 #define CLECRYPTAGE 0x4C // Clé XOR
 MicroBit uBit;
-int delay = 60;
+int delay = 50;
 /*=====================================FONCTIONS===========================================*/
 
     bool process_fire(ManagedString fireData, ManagedString &blockMessage, int &fireCount) {
@@ -87,7 +87,7 @@ int delay = 60;
                     uBit.display.scroll("SR", delay);
                     int start = 0;// Position de début pour parcourir le message (numero de capteur)
                     
-                    //uBit.display.scroll(receivedData.length(), delay);//DEBUG
+                    uBit.display.scroll(receivedData.length(), delay);//DEBUG
 
                     while (start < receivedData.length()) { // Parcourt chaque feu dans le message
 

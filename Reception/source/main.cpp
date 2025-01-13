@@ -6,7 +6,7 @@ MicroBit uBit;
 // Variables globales pour stocker les données reçues
 int id = 0;
 int i = 0;
-int delay = 70;
+int delay = 50;
 
 ManagedString fullMessage = ""; // Stocke le message complet reconstitué
 int blockCount = 0;             // Compteur de blocs reçus
